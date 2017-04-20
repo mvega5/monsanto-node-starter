@@ -441,6 +441,74 @@ module.exports = ExampleService;
 
 ```
 
+### Integrating a relational database ###
+
+There are serverals ORMs and query builders to acomplish this.
+We are going to use [bookshelf](http://bookshelfjs.org)
+
+let's install it
+
+```
+#!bash
+npm install knex --save
+npm install bookshelf --save
+```
+
+and we need to install the database drivers that we are going to use: PostgreSQL, SQLite
+
+```
+#!bash
+npm install pg --save
+npm install sqlite3 --save
+```
+
+We can also install sqlite command line client
+
+```
+#!bash
+brew install sqlite
+```
+
+### Migrations ###
+
+* Client: we are going to run migrations with [knex client](http://knexjs.org/#Migrations)
+	
+```
+#!bash
+npm install knex -g
+```
+* Creating a migration file
+
+```
+#!bash
+ knex migrate:make migration_name
+```
+
+then you will have a new file on `/migrations` directory
+
+like this
+
+```javascript
+exports.up = function(knex, Promise) {
+
+};
+
+exports.down = function(knex, Promise) {
+
+};
+```
+
+* Running migrations
+
+	Once you have finished writing the migrations, you can update 	the database matching your NODE_ENV by running:
+
+```
+#!bash
+ knex migrate:latest
+```
+
+
+
 
 
 

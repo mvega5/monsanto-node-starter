@@ -5,6 +5,7 @@ const rootContainer = somersault.createContainer();
 
 //here we can register manually to rootContainer
 rootContainer.register('logger', require('./lib/logger'));
+rootContainer.register('bookshelf', require('./lib/bookshelf'));
 
 const instance = ioc({
   rootContainer: rootContainer,
