@@ -309,6 +309,139 @@ A quick note.
 
 ```
 
+Now we need to integrate `connect-ioc`  with `express` app to doit more modular, we are going to create `ioc.js` module
+
+```javascript
+const somersault = require('somersault');
+const connectioc   = require('connect-ioc');
+
+const rootContainer = somersault.createContainer();
+
+//here we can register manually to rootContainer
+rootContainer.register('logger', require('./lib/logger'));
+
+const instance = ioc({
+  rootContainer: rootContainer,
+  autoRegister: { //here we scan for services and repositories
+      pattern: './lib/*/*[service,repository].js',
+      rootDirectory: __dirname
+    }
+});
+
+module.exports = instance;
+```
+
+then we can import `ioc.js` from `app.js` and integrate it with express
+
+```javascript
+'use strict';
+
+...
+const ioc          = require('./ioc');
+...
+
+const app  = express();
+
+app.use(ioc.middleware);
+app.use(micro(options));
+...
+
+module.exports = app;
+
+```
+
+### Injecting services on controller ###
+
+Now that we have an ioc container integrated with express we can rewrite our `ExampleController`
+
+```javascript
+'use strict';
+
+/**
+ * Initialise Items endpoints
+ *
+ * @param router
+ */
+module.exports = (router) => {
+
+
+  /**
+   * Example Collection
+   */
+  router.get('/', (req, res, next) => {
+
+    let service = req.ioc.resolve('exampleService');
+    let log = req.ioc.resolve('logger');
+
+    service.getExamples()
+      .then((items) => {
+
+        log.info('Correlation identifier generated', { correlationId: res.locals.correlationId });
+
+        res.cacheControl({ maxAge: 10});
+        res.json(items);
+      })
+      .catch(next);
+  });
+  ...
+};
+
+```
+
+we got rid of
+
+```javascript
+const log     = require('../logger');
+const service = require('../services/example-service');
+```
+
+replacing it with
+
+```javascript
+let service = req.ioc.resolve('exampleService');
+let log = req.ioc.resolve('logger');
+```
+
+### Injecting repositories on services ###
+
+It is a common pattern to have a repository layer and inject the repositories into services.
+
+We can inject services and repositories on the class constructor matching the argument name with the service name
+
+like this
+
+```javascript
+'use strict';
+
+...
+
+class ExampleService{
+
+  constructor(exampleRepository){
+    this.exampleRepository = exampleRepository;
+    ...
+  }
+
+  getExamples(){
+   return new Promise( (resolve, reject) =>{
+
+     this.exampleRepository.getExamples().then(function(items){
+        resolve(items)
+     }, function(err){
+       reject(err);
+     });
+
+    });
+  }
+
+  ...
+}
+
+module.exports = ExampleService;
+
+```
+
+
 
 
 

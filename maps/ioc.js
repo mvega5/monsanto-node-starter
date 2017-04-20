@@ -4,6 +4,7 @@ const ioc   = require('connect-ioc');
 const rootContainer = somersault.createContainer();
 
 //here we can register manually to rootContainer
+rootContainer.register('logger', require('./lib/logger'));
 
 const instance = ioc({
   rootContainer: rootContainer,
