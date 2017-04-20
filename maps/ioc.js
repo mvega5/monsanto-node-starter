@@ -3,12 +3,14 @@ const ioc   = require('connect-ioc');
 
 const myContainer = somersault.createContainer();
 
-exports.container = myContainer;
-
-exports.middleware = ioc({
+const instance = ioc({
   rootContainer: myContainer,
   autoRegister: {
-      pattern: './lib/services/*-service.js',
+      pattern: './lib/*/*[service,repository].js',
       rootDirectory: __dirname
     }
-}).middleware;
+});
+
+exports.container = instance.rootContainer;
+
+exports.middleware = instance.middleware;

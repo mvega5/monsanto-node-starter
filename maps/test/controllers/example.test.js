@@ -8,13 +8,22 @@ const request  = require('supertest-as-promised');
 
 const app     = require('../../app');
 const config  = require('konfig')({ path: 'config' });
-const ioc = require('../../ioc');
+const common = require('../common');
+
+
+class ExampleServiceContract{
+
+  getExamples(){}
+
+  throwError(){}
+}
+
 
 describe('controllers/example', function() {
 
   let sandbox;
+  let iocMock;
   let serviceMock;
-  let containerMock;
 
   let basePath = config.app.microservice.server.name;
 
@@ -28,13 +37,11 @@ describe('controllers/example', function() {
 
   beforeEach(function(done) {
     sandbox = sinon.sandbox.create();
-    serviceMock  = sandbox.mock({
-      getExamples(){},
-      throwError(){}
-    });
+    iocMock = common.iocMock(sandbox);
 
-    containerMock = sandbox.mock(ioc.container);
-    containerMock.expects('resolve').withArgs('exampleService').resolves(serviceMock);
+    serviceMock = sandbox.mock(new ExampleServiceContract());
+    iocMock.expects('resolve').withArgs('exampleService').returns(serviceMock.object);
+
     done();
   });
 

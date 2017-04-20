@@ -8,7 +8,8 @@ const ResourceNotFoundError = require('../errors/resource-not-found');
 
 class ExampleService{
 
-  constructor(){
+  constructor(exampleRepository){
+    this.exampleRepository = exampleRepository;
 
     /*
      * Remove comment below to enable a zookeeper connected client.
@@ -24,15 +25,11 @@ class ExampleService{
   getExamples(){
    return new Promise( (resolve, reject) =>{
 
-     let items = [{
-       id: 1,
-       name: 'movies'
-     }, {
-       id: 2,
-       name: 'shows'
-     }];
-
-     resolve(items);
+     this.exampleRepository.getExamples().then(function(items){
+        resolve(items)
+     }, function(err){
+       reject(err);
+     });
 
      /*
       * Remove comment below to use zookeeper connected client.
@@ -53,4 +50,4 @@ class ExampleService{
   }
 }
 
-module.exports = new ExampleService();
+module.exports = ExampleService;

@@ -9,6 +9,7 @@ const log     = require('../logger');
  */
 module.exports = (router) => {
 
+
   /**
    * Example Collection
    */
@@ -31,6 +32,7 @@ module.exports = (router) => {
    * Example Error handling
    */
   router.get('/error', (req, res, next) => {
+    
     service.throwError().catch(next);
   });
 };
