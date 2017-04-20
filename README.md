@@ -189,7 +189,132 @@ module.exports = app;
 
 	binds app object to PORT and start listening for connections
 
+### Routes ###
+
+On `index.js` on `express-microservice-starter` options we have
+
+```javascript
+const options = {
+  ...
+  controllersPath: 'lib/controllers',
+  ...
+};
+```
+
+that means that controllers are loaded from `lib/controllers`directory
+
+this controllers are registered on express like resource routes following the pattern $BASE_URL/$FILE_NAME
+
+### Controller ###
+
+Lets take a look to `/lib/controllers/example.js`
+
+```javascript
+'use strict';
+
+const log     = require('../logger');
+const service = require('../services/example-service');
+
+/**
+ * Initialise Items endpoints
+ *
+ * @param router
+ */
+module.exports = (router) => {
+
+  /**
+   * Example Collection
+   */
+  router.get('/', (req, res, next) => {
+
+    service.getExamples()
+      .then((items) => {
+
+        log.info('Correlation identifier generated', { correlationId: res.locals.correlationId });
+
+        res.cacheControl({ maxAge: 10});
+        res.json(items);
+      })
+      .catch(next);
+  });
+
+  /**
+   * Example Error handling
+   */
+  router.get('/error', (req, res, next) => {
+    service.throwError().catch(next);
+  });
+};
+
+```
+* The module receives a router and configures (Verb, Relative Path)=> Handler/s
+
+* We can do route.get, router.post, router.put, router.patch, router.delete
+
+
+### Layers ###
+
+It's a common pattern to define layers on our code.
+In this example we have 
+
+* `lib/controllers`
+* `lib/services`
+
+And in the next steps we are going to create
+
+* `lib/repositories`
+* `lib/domain`
+
+### Layers dependencies ###
+
+`const service = require('../services/example-service');`
+
+gets an singleton of `example service`, this has 3 main drawbacks
+
+* We need to know the exact file path
+* It's harder to implement other life scope rather than singleton
+* It's harder to fullfill complex dependency graphs
+
+That is where the IoC (that Java and .NET developers loves) comes handy
+
+
+### Setting up IoC ###
+
+There are serveral IoC alternatives for Node.js, we are going to use [somersault](https://www.npmjs.com/package/somersault) and [connect-ioc](https://www.npmjs.com/package/connect-ioc)
+
+So let install these libraries
 	
+```
+#!bash
+npm install --save connect-ioc
+npm install --save somersault
+```
+
+A quick note. 
+
+ --save argument it's important because we it tell to npm to register the dependency on package.json
+ 
+ `package.json`
+ 
+```json
+ {
+ 	...
+   "dependencies": {
+    "connect-ioc": "^1.0.6",
+     ...
+    "somersault": "^1.3.0"
+  }
+  ...
+}
+
+```
+
+
+
+
+ 
+
+
 	 
 	
 

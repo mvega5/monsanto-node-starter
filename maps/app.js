@@ -3,7 +3,7 @@
 const config       = require('konfig')({ path: 'config' });
 const express      = require('express');
 const micro        = require('express-microservice-starter');
-
+const ioc          = require('./ioc');
 const log = require('./lib/logger');
 
 const PORT = process.env.PORT || config.app.server.port;
@@ -18,6 +18,7 @@ const options = {
 
 const app  = express();
 
+app.use(ioc.middleware);
 app.use(micro(options));
 app.use(require('./lib/express/resource-not-found-middleware'));
 app.use(require('./lib/express/error-handler-middleware'));

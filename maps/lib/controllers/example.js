@@ -1,7 +1,6 @@
 'use strict';
 
 const log     = require('../logger');
-const service = require('../services/example-service');
 
 /**
  * Initialise Items endpoints
@@ -14,6 +13,8 @@ module.exports = (router) => {
    * Example Collection
    */
   router.get('/', (req, res, next) => {
+
+    let service = req.ioc.resolve('exampleService');
 
     service.getExamples()
       .then((items) => {

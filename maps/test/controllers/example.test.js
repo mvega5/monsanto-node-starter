@@ -8,12 +8,13 @@ const request  = require('supertest-as-promised');
 
 const app     = require('../../app');
 const config  = require('konfig')({ path: 'config' });
-const service = require('../../lib/services/example-service');
+const ioc = require('../../ioc');
 
 describe('controllers/example', function() {
 
   let sandbox;
-  let mock;
+  let serviceMock;
+  let containerMock;
 
   let basePath = config.app.microservice.server.name;
 
@@ -27,7 +28,13 @@ describe('controllers/example', function() {
 
   beforeEach(function(done) {
     sandbox = sinon.sandbox.create();
-    mock    = sandbox.mock(service);
+    serviceMock  = sandbox.mock({
+      getExamples(){},
+      throwError(){}
+    });
+
+    containerMock = sandbox.mock(ioc.container);
+    containerMock.expects('resolve').withArgs('exampleService').resolves(serviceMock);
     done();
   });
 
@@ -38,7 +45,7 @@ describe('controllers/example', function() {
 
   it('should return a list of Examples when GET /example is requested', function(done) {
 
-    mock.expects('getExamples').resolves(examples);
+    serviceMock.expects('getExamples').resolves(examples);
 
     request(app)
         .get('/' + basePath + '/example')
@@ -54,7 +61,7 @@ describe('controllers/example', function() {
 
   it('should return a Error when GET /example/error is requested', function(done) {
 
-    mock.expects('throwError').rejects('bad');
+    serviceMock.expects('throwError').rejects('bad');
 
     request(app)
       .get('/' + basePath + '/example/error')
