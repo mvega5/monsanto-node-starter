@@ -23,6 +23,7 @@ describe('controllers/example', function() {
 
   let sandbox;
   let iocMock;
+  let loggerMock;
   let serviceMock;
 
   let basePath = config.app.microservice.server.name;
@@ -38,9 +39,11 @@ describe('controllers/example', function() {
   beforeEach(function(done) {
     sandbox = sinon.sandbox.create();
     iocMock = common.iocMock(sandbox);
+    loggerMock = common.loggerMock(sandbox);
 
     serviceMock = sandbox.mock(new ExampleServiceContract());
     iocMock.expects('resolve').withArgs('exampleService').returns(serviceMock.object);
+    iocMock.expects('resolve').withArgs('logger').returns(loggerMock.object);
 
     done();
   });

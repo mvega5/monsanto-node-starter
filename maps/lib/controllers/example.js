@@ -32,6 +32,8 @@ module.exports = (router) => {
    */
   router.get('/error', (req, res, next) => {
     
+    let service = req.ioc.resolve('exampleService');
+
     service.throwError().catch(next);
   });
 };
