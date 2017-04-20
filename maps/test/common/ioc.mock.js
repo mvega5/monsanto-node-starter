@@ -15,7 +15,7 @@ module.exports = (sandbox)=>{
     
     let scope = new Contract();
 
-    let containerMock = sandbox.mock(ioc.container);
+    let containerMock = sandbox.mock(ioc.rootContainer);
     
     containerMock.expects('createChild').returns(scope);
 

@@ -11,9 +11,11 @@ class ExampleRepository{
      let items = [{
        id: 1,
        name: 'movies'
-     }
-     //, { id: 2, name: 'shows'}
-    ];
+     }, 
+     {
+        id: 2,
+        name: 'shows'
+     }];
 
      resolve(items);
     });

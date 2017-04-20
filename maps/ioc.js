@@ -1,16 +1,16 @@
 const somersault = require('somersault');
 const ioc   = require('connect-ioc');
 
-const myContainer = somersault.createContainer();
+const rootContainer = somersault.createContainer();
+
+//here we can register manually to rootContainer
 
 const instance = ioc({
-  rootContainer: myContainer,
+  rootContainer: rootContainer,
   autoRegister: {
       pattern: './lib/*/*[service,repository].js',
       rootDirectory: __dirname
     }
 });
 
-exports.container = instance.rootContainer;
-
-exports.middleware = instance.middleware;
+module.exports = instance;
