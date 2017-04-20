@@ -14,15 +14,26 @@ module.exports = (router) => {
   router.get('/', (req, res, next) => {
 
     let service = req.ioc.resolve('pointOfDeliveryService');
-    let log = req.ioc.resolve('logger');
 
     service.get()
       .then((items) => {
 
-        log.info('Correlation identifier generated', { correlationId: res.locals.correlationId });
-
-        res.cacheControl({ maxAge: 10});
         res.json(items);
+
+      })
+      .catch(next);
+  });
+
+  /**
+   * PODs Collection
+   */
+  router.get('/:id', (req, res, next) => {
+
+    let service = req.ioc.resolve('pointOfDeliveryService');
+
+    service.getById(req.params.id)
+      .then((item) => {
+        res.json(item);
       })
       .catch(next);
   });

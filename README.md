@@ -469,7 +469,145 @@ We can also install sqlite command line client
 brew install sqlite
 ```
 
+then we are going to create `knexfile.js`
+
+```javascript
+module.exports = {
+
+  development: {
+    client: 'sqlite3',
+    connection: {
+      filename: './dev.sqlite3'
+    }
+  },
+
+  staging: {
+    client: 'postgresql',
+    connection: {
+      database: 'my_db',
+      user:     'username',
+      password: 'password'
+    },
+    pool: {
+      min: 2,
+      max: 10
+    },
+    migrations: {
+      tableName: 'knex_migrations'
+    }
+  },
+
+  production: {
+    client: 'postgresql',
+    connection: {
+      database: 'my_db',
+      user:     'username',
+      password: 'password'
+    },
+    pool: {
+      min: 2,
+      max: 10
+    },
+    migrations: {
+      tableName: 'knex_migrations'
+    }
+  }
+
+};
+
+```
+
+And `lib/bookshelf.js`
+
+```javascript
+'use strict';
+
+const knexfile = require('../knexfile');
+
+let config;
+
+switch(process.env.NODE_ENV){
+    case 'production':
+        config = knexfile.production;
+        break;
+    case 'staging':
+        config = knexfile.staging;
+        break;
+    case 'development':
+    default:
+        config = knexfile.development;
+        break;
+}
+
+var knex = require('knex')(config);
+
+module.exports = require('bookshelf')(knex);
+```
+Where we configure bookshelf connection pool matching NODE_ENV enviroment variable 
+
+
+### Defining a Model ###
+
+Bookshelf works with active record pattern, so we need to define our models in order to hit the database
+
+let's create `lib/models/point-of-delivery.js`
+
+```javacript
+'use strict';
+
+const bookshelf = require('../bookshelf');
+
+class PointOfDelivery extends bookshelf.Model {  
+    get tableName() {
+        return 'pods';
+    }
+
+    get hasTimestamps() {
+        return true;
+    }
+}
+
+module.exports = PointOfDelivery;
+
+```
+
+Now we can create `lib/repositories/point-of-delivery-repository.js` like this:
+
+```javascript
+'use strict';
+
+const PointOfDelivery = require('../models/point-of-delivery'); 
+
+class PointOfDeliveryRepository{
+
+  constructor(){
+  }
+
+  create(data){
+    var model = new PointOfDelivery(data);
+    return model.save();
+  }
+
+  get(){
+    return PointOfDelivery.fetchAll();
+  }
+
+  getById(id){
+    return PointOfDelivery.where({id: id}).fetch();
+  }
+}
+
+module.exports =  PointOfDeliveryRepository;
+
+```
+
+both operation returns a promise
+
 ### Migrations ###
+
+We have our `PointOfDelivery` model but, we don't have `pods table`
+
+Let's talk about migrations
 
 * Client: we are going to run migrations with [knex client](http://knexjs.org/#Migrations)
 	
@@ -477,24 +615,31 @@ brew install sqlite
 #!bash
 npm install knex -g
 ```
-* Creating a migration file
+* Creating the migration file
 
 ```
 #!bash
- knex migrate:make migration_name
+ knex migrate:make "create pod table"
 ```
 
 then you will have a new file on `/migrations` directory
 
-like this
+we need to perform a `create table` on `up`
+and a `drop table` on `down`
+
+like this:
 
 ```javascript
 exports.up = function(knex, Promise) {
-
+    return knex.schema.createTable('pods', function (table) {
+        table.increments();
+        table.string('name');
+        table.timestamps();
+    });
 };
 
 exports.down = function(knex, Promise) {
-
+    return knex.schema.dropTable('pods')
 };
 ```
 
@@ -506,10 +651,6 @@ exports.down = function(knex, Promise) {
 #!bash
  knex migrate:latest
 ```
-
-
-
-
 
 
 

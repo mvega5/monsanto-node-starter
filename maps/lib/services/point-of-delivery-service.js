@@ -9,15 +9,11 @@ class PointOfDeliveryService{
   }
 
   get(){
-   return new Promise( (resolve, reject) =>{
+    return this.repository.get();
+  }
 
-     this.repository.get().then(function(items){
-        resolve(items)
-     }, function(err){
-       reject(err);
-     });
-
-    });
+  getById(id){
+    return this.repository.getById(id);
   }
 }
 

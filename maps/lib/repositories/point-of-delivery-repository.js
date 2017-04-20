@@ -7,8 +7,17 @@ class PointOfDeliveryRepository{
   constructor(){
   }
 
+  create(data){
+    let model = new PointOfDelivery(data);
+    return model.save();
+  }
+
   get(){
-    return PointOfDelivery.forge().fetch();
+    return PointOfDelivery.fetchAll();
+  }
+
+  getById(id){
+    return PointOfDelivery.where({id: id}).fetch();
   }
 }
 
