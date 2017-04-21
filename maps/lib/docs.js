@@ -5,6 +5,7 @@ const swaggerJSDoc = require('swagger-jsdoc');
 const config       = require('konfig')({ path: 'config' });
 
 const PORT = process.env.PORT || config.app.server.port;
+const SERVICE = config.app.microservice.server.name;
 
 // swagger definition
 var swaggerDefinition = {
@@ -14,7 +15,7 @@ var swaggerDefinition = {
     description: 'Demonstrating how to describe a RESTful API with Swagger',
   },
   host: 'localhost:' + PORT,
-  basePath: '/',
+  basePath: '/'+ SERVICE
 };
 
 // options for the swagger docs

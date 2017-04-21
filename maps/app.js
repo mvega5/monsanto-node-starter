@@ -19,9 +19,8 @@ const options = {
 
 const app  = express();
 
-app.get('/'+ SERVICE, function(req, res) {
-  res.json(docs);
-});
+app.use('/' + SERVICE + '/api-docs', express.static('public'));
+app.get('/' + SERVICE + '/swagger.json', function(req, res) { res.json(docs); });
 
 app.use(ioc.middleware);
 app.use(micro(options));

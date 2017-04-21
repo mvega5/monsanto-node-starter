@@ -653,8 +653,17 @@ exports.down = function(knex, Promise) {
 ```
 
 
+### Documentation ###
 
- 
+To generate the [Swagger specification](http://swagger.io/specification), we will be using [swagger-jsdoc](https://github.com/Surnet/swagger-jsdoc).
+
+* Install swagger-jsdoc:
+
+```
+#!bash
+npm install --save swagger-jsdoc
+```
+
 
 
 	 

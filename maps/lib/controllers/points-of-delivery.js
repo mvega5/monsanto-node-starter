@@ -5,6 +5,7 @@
  *
  * @param router
  */
+
 module.exports = (router) => {
 
   /**
@@ -46,7 +47,7 @@ module.exports = (router) => {
    *       - application/json
    *     parameters:
    *       - name: id
-   *         description: Puppy's id
+   *         description: Points of Delivery's id
    *         in: path
    *         required: true
    *         type: integer
@@ -90,11 +91,80 @@ module.exports = (router) => {
   router.post('/', (req, res, next) => {
 
     let service = req.ioc.resolve('pointOfDeliveryService');
-
+    
+    delete req.body.id;
+    
     service.create(req.body)
       .then((item) => {
         res.json(item);
       })
       .catch(next);
+  });
+
+/**
+ * @swagger
+ * /points-of-delivery/{id}:
+ *   put:
+ *     tags: 
+ *      - Point of Delivery
+ *     description: Updates a single Point of Delivery
+ *     produces:
+ *      - application/json
+ *     parameters:
+ *      - name: id
+ *        description: Points of Delivery's id
+ *        in: path
+ *        required: true
+ *        type: integer
+ *      - name: POD
+ *        in: body
+ *        description: Fields for the POD resource
+ *        schema:
+ *         $ref: '#/definitions/PointOfDelivery'
+ *     responses:
+ *       200:
+ *         description: Successfully updated
+ */
+  router.put('/:id', (req, res, next) => {
+
+    let service = req.ioc.resolve('pointOfDeliveryService');
+    
+    delete req.body.id;
+
+    service.updateById(req.params.id,req.body)
+      .then((item) => {
+        res.json(item);
+      })
+      .catch(next);
+  });
+
+  /**
+   * @swagger
+   * /points-of-delivery/{id}:
+   *   delete:
+   *     tags:
+   *       - Point of Delivery
+   *     description: Deletes a single Point of Delivery
+   *     produces:
+   *       - application/json
+   *     parameters:
+   *       - name: id
+   *         description: POD's id
+   *         in: path
+   *         required: true
+   *         type: integer
+   *     responses:
+   *       200:
+   *         description: Successfully deleted
+   */
+  router.delete('/:id', (req, res, next) => {
+
+    let service = req.ioc.resolve('pointOfDeliveryService');
+
+    service.deleteById(req.params.id)
+    .then((item) => {
+      res.json(item);
+    })
+    .catch(next);
   });
 };

@@ -1,14 +1,21 @@
 'use strict';
 
 const bookshelf = require('../bookshelf');
-
 /**
  * @swagger
- * definition:
+ * definitions:
  *   PointOfDelivery:
  *     properties:
+ *       id:
+ *         type: integer
  *       name:
  *         type: string
+ *       created_at:
+ *         type: integer
+ *         format: int64
+ *       updated_at:
+ *         type: integer
+ *         format: int64
  */
 class PointOfDelivery extends bookshelf.Model {  
     get tableName() {

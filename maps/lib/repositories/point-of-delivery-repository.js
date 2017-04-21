@@ -19,6 +19,7 @@ class PointOfDeliveryRepository{
   getById(id){
     return PointOfDelivery.where({id: id}).fetch();
   }
+
 }
 
 module.exports =  PointOfDeliveryRepository;
