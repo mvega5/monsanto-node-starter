@@ -4,7 +4,8 @@ const config       = require('konfig')({ path: 'config' });
 const express      = require('express');
 const micro        = require('express-microservice-starter');
 const ioc          = require('./ioc');
-const log = require('./lib/logger');
+const log          = require('./lib/logger');
+const docs         = require('./lib/docs');
 
 const PORT = process.env.PORT || config.app.server.port;
 const SERVICE = config.app.microservice.server.name;
@@ -17,6 +18,10 @@ const options = {
 };
 
 const app  = express();
+
+app.get('/'+ SERVICE, function(req, res) {
+  res.json(docs);
+});
 
 app.use(ioc.middleware);
 app.use(micro(options));
