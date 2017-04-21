@@ -21,7 +21,9 @@ module.exports = (router) => {
    *       200:
    *         description: An array of Points of Delivery
    *         schema:
-   *           $ref: '#/definitions/PointOfDelivery'
+   *           type: array
+   *           items: 
+   *            $ref: '#/definitions/PointOfDelivery'
    */
   router.get('/', (req, res, next) => {
 
@@ -90,6 +92,8 @@ module.exports = (router) => {
    *     responses:
    *       200:
    *         description: Successfully created
+   *         schema:
+   *           $ref: '#/definitions/PointOfDelivery'
    */
   router.post('/', (req, res, next) => {
 
@@ -130,6 +134,8 @@ module.exports = (router) => {
  *     responses:
  *       200:
  *         description: Successfully updated
+ *         schema:
+ *           $ref: '#/definitions/PointOfDelivery'
  */
   router.put('/:id', (req, res, next) => {
 
@@ -168,8 +174,8 @@ module.exports = (router) => {
     let service = req.ioc.resolve('pointOfDeliveryService');
 
     service.deleteById(req.params.id)
-    .then((item) => {
-      res.json(item);
+    .then(() => {
+      res.status(200).send({});
     })
     .catch(next);
   });
