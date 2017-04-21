@@ -83,7 +83,10 @@ module.exports = (router) => {
    *         in: body
    *         required: true
    *         schema:
-   *           $ref: '#/definitions/PointOfDelivery'
+   *          type: object
+   *          properties:
+   *             name:
+   *               type: string
    *     responses:
    *       200:
    *         description: Successfully created
@@ -120,7 +123,10 @@ module.exports = (router) => {
  *        in: body
  *        description: Fields for the POD resource
  *        schema:
- *         $ref: '#/definitions/PointOfDelivery'
+ *          type: object
+ *          properties:
+ *             name:
+ *               type: string
  *     responses:
  *       200:
  *         description: Successfully updated
