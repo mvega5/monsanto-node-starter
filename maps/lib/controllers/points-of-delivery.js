@@ -62,8 +62,10 @@ module.exports = (router) => {
   router.get('/:id', (req, res, next) => {
 
     let service = req.ioc.resolve('pointOfDeliveryService');
+    
+    let id = parseInt(req.params.id);
 
-    service.getById(req.params.id)
+    service.getById(id)
       .then((item) => {
         res.json(item);
       })
@@ -140,10 +142,12 @@ module.exports = (router) => {
   router.put('/:id', (req, res, next) => {
 
     let service = req.ioc.resolve('pointOfDeliveryService');
-    
-    delete req.body.id;
 
-    service.updateById(req.params.id,req.body)
+    let id = parseInt(req.params.id);
+    let data = req.body; 
+    delete data.id;
+   
+    service.updateById(id, data)
       .then((item) => {
         res.json(item);
       })
