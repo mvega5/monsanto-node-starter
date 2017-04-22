@@ -1,5 +1,7 @@
 'use strict';
 
+const ResourceNotFoundError = require('../errors/resource-not-found');
+
 /**
  * Initialise Items endpoints
  *
@@ -67,7 +69,8 @@ module.exports = (router) => {
 
     service.getById(id)
       .then((item) => {
-        res.json(item);
+        if(item) res.json(item);
+        else next(new ResourceNotFoundError("Not Found"));
       })
       .catch(next);
   });
@@ -149,7 +152,8 @@ module.exports = (router) => {
    
     service.updateById(id, data)
       .then((item) => {
-        res.json(item);
+        if(item) res.json(item);
+        else next(new ResourceNotFoundError("Not Found"));
       })
       .catch(next);
   });
@@ -177,9 +181,12 @@ module.exports = (router) => {
 
     let service = req.ioc.resolve('pointOfDeliveryService');
 
-    service.deleteById(req.params.id)
-    .then(() => {
-      res.status(200).send({});
+    let id = parseInt(req.params.id);
+
+    service.deleteById(id)
+    .then((r) => {
+       if(r) res.status(200).send();
+       else next(new ResourceNotFoundError("Not Found"));
     })
     .catch(next);
   });

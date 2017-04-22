@@ -24,7 +24,7 @@ class PointOfDeliveryService{
     return this.repository
     .getById(id)
     .then(function(model){
-        return model.save(data);
+        return (model)? model.save(data) : null;
     });
   }
 
@@ -32,7 +32,7 @@ class PointOfDeliveryService{
     return this.repository
     .getById(id)
     .then(function(model){
-        return model.destroy();
+        return (model)? model.destroy() : null;
     });
   }
 }

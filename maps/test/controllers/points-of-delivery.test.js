@@ -2,6 +2,7 @@
 
 const _ = require('lodash');
 const mocha    = require('mocha');
+const assert   = require('assert')
 const should   = require('chai').should();
 const sinon    = require('sinon');
 const promised = require('sinon-as-promised');
@@ -19,6 +20,8 @@ class PointOfDeliveryServiceContract{
   getById(id){}
 
   updateById(id, data){}
+
+  deleteById(id){}
 }
 
 
@@ -93,7 +96,24 @@ describe('controllers/points-of-delivery', function() {
         .expect(200, done);
   });
 
-  it('should update and return a single POD when PUT /points-of-delivery/{id} is requested', function(done) {
+  it('should return Resource Not Found when GET /points-of-delivery/{id} targets an unknown id', function(done) {
+
+    let id = 9999;
+    serviceMock.expects('getById').withArgs(id).once().resolves(null);
+
+    request(app)
+        .get('/' + basePath + '/points-of-delivery/'+ id)
+        .set('Accept', 'application/json')
+        .expect(function(res) {
+          res.body.name.should.equal("ResourceNotFoundError");
+          res.body.message.should.equal("Not Found");
+
+          serviceMock.verify();
+        })
+        .expect(404, done);
+  });
+
+  it('should return a single POD when PUT /points-of-delivery/{id} is requested', function(done) {
 
     let i = 1;
     let id = pods[i].id;
@@ -120,6 +140,73 @@ describe('controllers/points-of-delivery', function() {
           serviceMock.verify();
         })
         .expect(200, done);
+  });
+
+  it('should return Resource Not Found when PUT /points-of-delivery/{id} targets an unknown id', function(done) {
+
+    let id = 9999;
+    let update = { name: 'updated' };
+
+    serviceMock.expects('updateById')
+               .withArgs(id, update)
+               .once()
+               .resolves(null);
+
+    request(app)
+        .put('/' + basePath + '/points-of-delivery/'+ id)
+        .type('json')
+        .send(update)
+        .set('Accept', 'application/json')
+        .expect(function(res) {
+          res.body.name.should.equal("ResourceNotFoundError");
+          res.body.message.should.equal("Not Found");
+
+          serviceMock.verify();
+        })
+        .expect(404, done);
+  });
+
+  it('should return Empty when DELETE /points-of-delivery/{id} is requested', function(done) {
+
+    let i = 1;
+    let id = pods[i].id;
+    let source = pods[i];
+
+    serviceMock.expects('deleteById')
+               .withArgs(id)
+               .once()
+               .resolves(source);
+
+    request(app)
+        .delete('/' + basePath + '/points-of-delivery/'+ id)
+        .set('Accept', 'application/json')
+        .expect(function(res) {
+          assert.ok(_.isEmpty(res.body), "body is empty")
+
+          serviceMock.verify();
+        })
+        .expect(200, done);
+  });
+
+  it('should return Resource Not Found when DELETE /points-of-delivery/{id} targets an unknown id', function(done) {
+
+    let id = 9999;
+
+    serviceMock.expects('deleteById')
+               .withArgs(id)
+               .once()
+               .resolves(null);
+
+    request(app)
+        .delete('/' + basePath + '/points-of-delivery/'+ id)
+        .set('Accept', 'application/json')
+        .expect(function(res) {
+          res.body.name.should.equal("ResourceNotFoundError");
+          res.body.message.should.equal("Not Found");
+
+          serviceMock.verify();
+        })
+        .expect(404, done);
   });
 
 });
