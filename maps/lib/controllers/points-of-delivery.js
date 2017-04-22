@@ -1,6 +1,6 @@
 'use strict';
 
-const ResourceNotFoundError = require('../errors/resource-not-found');
+const ResourceController = require('../commons/resource-controller');
 
 /**
  * Initialise Items endpoints
@@ -9,6 +9,8 @@ const ResourceNotFoundError = require('../errors/resource-not-found');
  */
 
 module.exports = (router) => {
+
+  let resource = new ResourceController('pointOfDeliveryService').bindAll();
 
   /**
    * @swagger
@@ -27,18 +29,7 @@ module.exports = (router) => {
    *           items: 
    *            $ref: '#/definitions/PointOfDelivery'
    */
-  router.get('/', (req, res, next) => {
-
-    let service = req.ioc.resolve('pointOfDeliveryService');
-
-    service.get()
-      .then((items) => {
-
-        res.json(items);
-
-      })
-      .catch(next);
-  });
+  router.get('/', resource.get);
 
   /**
    * @swagger
@@ -61,19 +52,7 @@ module.exports = (router) => {
    *         schema:
    *           $ref: '#/definitions/PointOfDelivery'
    */
-  router.get('/:id', (req, res, next) => {
-
-    let service = req.ioc.resolve('pointOfDeliveryService');
-    
-    let id = parseInt(req.params.id);
-
-    service.getById(id)
-      .then((item) => {
-        if(item) res.json(item);
-        else next(new ResourceNotFoundError("Not Found"));
-      })
-      .catch(next);
-  });
+  router.get('/:id', resource.getById);
 
   /**
    * @swagger
@@ -100,18 +79,7 @@ module.exports = (router) => {
    *         schema:
    *           $ref: '#/definitions/PointOfDelivery'
    */
-  router.post('/', (req, res, next) => {
-
-    let service = req.ioc.resolve('pointOfDeliveryService');
-    
-    delete req.body.id;
-    
-    service.create(req.body)
-      .then((item) => {
-        res.json(item);
-      })
-      .catch(next);
-  });
+  router.post('/', resource.create);
 
 /**
  * @swagger
@@ -142,21 +110,7 @@ module.exports = (router) => {
  *         schema:
  *           $ref: '#/definitions/PointOfDelivery'
  */
-  router.put('/:id', (req, res, next) => {
-
-    let service = req.ioc.resolve('pointOfDeliveryService');
-
-    let id = parseInt(req.params.id);
-    let data = req.body; 
-    delete data.id;
-   
-    service.updateById(id, data)
-      .then((item) => {
-        if(item) res.json(item);
-        else next(new ResourceNotFoundError("Not Found"));
-      })
-      .catch(next);
-  });
+  router.put('/:id', resource.updateById);
 
   /**
    * @swagger
@@ -177,17 +131,5 @@ module.exports = (router) => {
    *       200:
    *         description: Successfully deleted
    */
-  router.delete('/:id', (req, res, next) => {
-
-    let service = req.ioc.resolve('pointOfDeliveryService');
-
-    let id = parseInt(req.params.id);
-
-    service.deleteById(id)
-    .then((r) => {
-       if(r) res.status(200).send();
-       else next(new ResourceNotFoundError("Not Found"));
-    })
-    .catch(next);
-  });
+  router.delete('/:id', resource.deleteById);
 };
