@@ -11,6 +11,9 @@ module.exports = (err, req, res, next) => {
     case 'ResourceNotFoundError':
       res.status(404).json({name: err.name, message: err.message, errors: err.errors});
       break;
+    case 'BadRequest':
+      res.status(400).json({name: err.name, message: err.message, errors: err.errors});
+      break;
 
     // Handle other Errors here...
 

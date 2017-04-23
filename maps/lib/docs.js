@@ -1,5 +1,6 @@
 'use strict';
 
+const _            = require('lodash');
 const path         = require('path');
 const swaggerJSDoc = require('swagger-jsdoc');
 const config       = require('konfig')({ path: 'config' });
@@ -15,7 +16,7 @@ var swaggerDefinition = {
     description: 'Demonstrating how to describe a RESTful API with Swagger',
   },
   host: 'localhost:' + PORT,
-  basePath: '/'+ SERVICE
+  basePath: '/'
 };
 
 // options for the swagger docs
@@ -29,5 +30,13 @@ var options = {
   ],
 };
 
+let docs = swaggerJSDoc(options);
+
+//fix paths
+var fixedPaths = _.mapKeys(docs.paths, (routes, path)=>{
+  return '/' + SERVICE +  path;
+});
+docs.paths = fixedPaths;
+
 // initialize swagger-jsdoc
-module.exports = swaggerJSDoc(options);
+module.exports = docs;

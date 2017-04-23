@@ -9,7 +9,6 @@ const ResourceController = require('../commons/resource-controller');
  */
 
 module.exports = (router) => {
-
   let resource = new ResourceController('pointOfDeliveryService').bindAll();
 
   /**
@@ -73,6 +72,9 @@ module.exports = (router) => {
    *          properties:
    *             name:
    *               type: string
+   *          additionalProperties: false
+   *          required:
+   *            - name
    *     responses:
    *       200:
    *         description: Successfully created
@@ -91,19 +93,22 @@ module.exports = (router) => {
  *     produces:
  *      - application/json
  *     parameters:
- *      - name: id
- *        description: Points of Delivery's id
- *        in: path
- *        required: true
- *        type: integer
  *      - name: POD
  *        in: body
  *        description: Fields for the POD resource
  *        schema:
  *          type: object
  *          properties:
+ *             id:
+ *               type: integer
  *             name:
  *               type: string
+ *          additionalProperties: false
+ *      - name: id
+ *        description: Points of Delivery's id
+ *        in: path
+ *        required: true
+ *        type: integer
  *     responses:
  *       200:
  *         description: Successfully updated

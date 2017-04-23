@@ -2,6 +2,7 @@
 
 const _ = require('lodash');
 const ResourceNotFoundError = require('../errors/resource-not-found');
+const BadRequestError = require('../errors/bad-request');
 
 class ResourceController{
   constructor(serviceName){
@@ -31,12 +32,12 @@ class ResourceController{
   }
 
   create(req, res, next){
-    
+
     let service = req.ioc.resolve(this.serviceName);
     
-    delete req.body.id;
-    
-    service.create(req.body)
+    let data = req.body;
+
+    service.create(data)
       .then((item) => {
         res.json(item);
       })
@@ -59,18 +60,25 @@ class ResourceController{
 
   updateById(req, res, next){
 
+    if(req.body.id != undefined)
+      req.checkBody('id', 'body.id should match params.id').equals(req.params.id);
+
+    let errors = req.validationErrors();
+    
+    if (!_.isEmpty(errors))
+      return next(new BadRequestError("Invalid", "Update", errors));
+    
     let service = req.ioc.resolve(this.serviceName);
 
     let id = parseInt(req.params.id);
-    let data = req.body; 
-    delete data.id;
-   
+    let data = req.body;
+    
     service.updateById(id, data)
-      .then((item) => {
-        if(item) res.json(item);
-        else next(new ResourceNotFoundError("Not Found"));
-      })
-      .catch(next);
+    .then((item) => {
+      if(item) res.json(item);
+      else next(new ResourceNotFoundError("Not Found"));
+    })
+    .catch(next);
   }
 
   deleteById(req, res, next){
